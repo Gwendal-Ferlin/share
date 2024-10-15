@@ -30,6 +30,11 @@
 							<a class="nav-link active" href="{{path('app_contact')}}">Contact
 								<span class="visually-hidden">(current)</span>
 							</a>
+							<li class="nav-item">
+							<a class="nav-link active" href="{{path('app_ajout_fichier')}}">AjoutFichier
+								<span class="visually-hidden">(current)</span>
+							</a>
+						</li>
 						</li>
 						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MOD')%}
 							<li class="nav-item">
