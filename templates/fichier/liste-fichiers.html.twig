@@ -12,29 +12,15 @@
 					<table class="table table-hover">
 						<thead>
 							<tr class="fw-bold text-primary">
-								<th scope="col">Email</th>
-								<th scope="col">Date d'inscription</th>
-								<th scope="col">Rôle</th>
-								<th scope="col">Nombre de fichiers</th>
+								<th scope="col">Nom Original</th>
+								<th scope="col">Auteur</th>
 							</tr>
 						</thead>
 						<tbody>
-							{% for user in users |sort((a, b) =>
-b.email <=> a.email) %}
+							{% for fichier in fichiers |sort((a, b) => b.nomOriginal <=> a.nomOriginal) %}
 								<tr class="{{ cycle(['table-primary', 'table-secondary'], loop.index0) }}">
-									<td>{{ user.email}}</td>
-									<td>{{ user.inscriptionDate |
-date("d-m-Y à H:i:s") }}</td>
-									{% if 'ROLE_ADMIN' in user.roles %}
-
-										<td>Administrateur</td>
-									{% elseif 'ROLE_MOD' in user.roles %}
-										<td>Moderateur</td>
-									{% else %}
-										<td>Utilisateur</td>
-									{% endif %}
-
-									<td>{{ user.fichiers | length }}</td>
+									<td>{{fichier.nomOriginal}}</td>
+									<td>{{fichier.user.name}} {{fichier.user.prenom}}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
