@@ -10,6 +10,7 @@ use App\Controller\FichierController;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Fichier;
 use App\Form\FichierType;
+use App\Repository\FichierRepository;
 
 class FichierController extends AbstractController
 {
@@ -32,4 +33,12 @@ class FichierController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-}
+    #[Route('/liste-fichiers', name: 'app_liste_fichiers')]
+    public function listeFichiers(FichierRepository $fichierRepository): Response
+    {
+        $fichiers = $fichierRepository->findAll();
+        return $this->render('fichier/liste-fichiers.html.twig', [
+            'fichiers' => $fichiers,
+        ]);
+    }
+};
