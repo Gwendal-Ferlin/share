@@ -1,16 +1,17 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\Categorie;
-use App\Form\ModifierCategorieType;
-use App\Form\SupprimerCategorieType;
-use App\Form\CategorieType;
-use App\Repository\CategorieRepository;
+use App\Entity\TypeBatterie;
+use App\Form\ModifierTypeBatterieType;
+use App\Form\SupprimerTypeBatterieType;
+use App\Form\TypeBatterieType;
+use App\Repository\TypeBatterieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 class CategorieController extends AbstractController
 {
@@ -73,6 +74,7 @@ class CategorieController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
     #[Route('/private-supprimer-categorie/{id}', name: 'app_supprimer_categorie')]
     public function supprimerCategorie(Request $request, Categorie
          $categorie, EntityManagerInterface $em): Response {

@@ -1,7 +1,9 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\CategorieRepository;
+use App\Repository\UserRepository;
 use App\Entity\Categorie;
 use App\Entity\Contact;
 use App\Form\CategorieType;
@@ -56,4 +58,18 @@ class BaseController extends AbstractController
         ]);
     }
 
+    #[Route('/admin-liste-user', name: 'app_liste_users')]
+    public function listeUsers(UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findAll();
+        return $this->render('base/liste-users.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
+    #[Route('/private-profil', name: 'app_profil')]
+    public function profil(): Response
+    {
+        return $this->render('base/profil.html.twig');
+    }
 }

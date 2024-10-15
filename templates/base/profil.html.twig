@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	{{parent()}}Page Profil
+{% endblock %}
+{% block body %}
+	<div class="container-fluid">
+		<h1 class="text-center text-primary mt-4 pt-4 display-1 fw-bold">
+			Page Profil</h1>
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-8 bg-white p-4 m-0 text-primary">
+				<table class="table">
+					<tr class='primary'>
+						<th>Email:</th>
+						<td>{{app.user.email}}</td>
+					</tr>
+					<tr class='primary'>
+						<th>Nom:</th>
+						<td>{{app.user.name}}</td>
+					</tr>
+					<tr class='primary'>
+						<th>Prénom:</th>
+						<td>{{app.user.prenom}}</td>
+					</tr>
+					<tr class='primary'>
+						<th>Date d'inscription:</th>
+						<td>{{app.user.inscriptionDate|date('d/m/Y')}}</td>
+					</tr>
+					<tr class='primary'>
+						<th>Rôle:</th>
+						<td>
+							{% if "ROLE_ADMIN" in app.user.roles %}
+								Administrateur
+							{% elseif "ROLE_MOD" in app.user.roles %}
+								Modérateur
+							{% elseif "ROLE_USER" in app.user.roles %}
+								Utilisateur
+							{% endif %}
+						</td>
+					</tr>
+				</div>
+			</div>
+		</div>
+	{% endblock %}

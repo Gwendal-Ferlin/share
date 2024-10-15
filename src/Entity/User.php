@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,6 +33,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $inscriptionDate = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $prenom = null;
 
     public function getId(): ?int
     {
@@ -106,5 +116,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getInscriptionDate(): ?\DateTimeInterface
+    {
+        return $this->inscriptionDate;
+    }
+
+    public function setInscriptionDate(\DateTimeInterface $inscriptionDate): static
+    {
+        $this->inscriptionDate = $inscriptionDate;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
     }
 }

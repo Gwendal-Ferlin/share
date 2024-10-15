@@ -31,11 +31,12 @@
 								<span class="visually-hidden">(current)</span>
 							</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link active" href="{{path('app_liste_contacts')}}">ListeContact
-								<span class="visually-hidden">(current)</span>
-							</a>
-						</li>
+						{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MOD')%}
+							<li class="nav-item">
+								<a class="nav-link active" href="{{path('app_liste_contacts')}}">Liste des contacts</a>
+							</li>
+						{% endif %}
+
 						<li class="nav-item">
 							<a class="nav-link active" href="{{path('app_propos')}}">A propos
 								<span class="visually-hidden">(current)</span>
@@ -60,25 +61,24 @@
 								<a class="dropdown-item" href="{{path('app_register')}}">Register</a>
 							</div>
 						</li>
-
+						{% if is_granted('ROLE_ADMIN')%}
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Admin</a>
 							<div class="dropdown-menu">
-								<a class="dropdown-item" href="#">Action</a>
-								<a class="dropdown-item" href="#">Another action</a>
+								<a class="dropdown-item" href="{{path('app_liste_users')}}">Liste des Users</a>
 								<a class="dropdown-item" href="#">Something else here</a>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item" href="#">Separated link</a>
 							</div>
 						</li>
+						{% endif %}
 					</ul>
 					<form class="d-flex">
 						<input class="form-control me-sm-2" type="search" placeholder="Search">
 						<button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
 					</form>
 					<ul class="navbar-nav me-auto">
-						{% if not
-is_granted('IS_AUTHENTICATED_FULLY') %}
+						{% if not is_granted('IS_AUTHENTICATED_FULLY') %}
 							<li class="nav-item">
 								<a class="nav-link" href="{{path('app_login')}}">Se connecter
 								</a>
@@ -88,11 +88,12 @@ is_granted('IS_AUTHENTICATED_FULLY') %}
 								</a>
 							</li>
 						{% else %}
-							<li class="nav-item">
-								<a class="nav-link" href="{{path('app_logout')}}">
+							<a class="nav-link" href="{{path('app_profil')}}">
 									{{app.user.email}}
-									<i class="bi
-										bi-x-circle-fill"></i>
+									<i class="bi bi-person-circle"></i>
+									</a>
+									<a class="nav-link" href="{{path('app_logout')}}">
+									<i class="bi-x-circle-fill"></i>
 								</a>
 							</li>
 						{% endif %}
