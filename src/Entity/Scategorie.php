@@ -1,12 +1,12 @@
 <?php
-
 namespace App\Entity;
-
 use App\Repository\ScategorieRepository;
 use Doctrine\ORM\Mapping as ORM;
-
+use App\EventListener\ScategorieListener;
 #[ORM\Entity(repositoryClass: ScategorieRepository::class)]
+#[ORM\EntityListeners([ScategorieListener::class])]
 class Scategorie
+
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

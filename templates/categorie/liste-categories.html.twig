@@ -20,10 +20,31 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for categorie in categories |sort((a, b) =>
-a.libelle <=> b.libelle) %}
+							{% for categorie in categories |sort((a, b) => a.libelle <=> b.libelle) %}
 								<tr class="{{ cycle(['table-primary', 'table-secondary'], loop.index0) }}">
-									<td class="textstart">{{ categorie.libelle | capitalize }}</td>
+									<td class="text-start">{{ categorie.libelle | capitalize }}
+										{% if categorie.scategories | length > 0 %}
+											<ul>
+												{% for sc in categorie.scategories |sort((a, b) => a.numero <=> b.numero) %}
+													<li>{{sc.numero}}
+														-
+														{{sc.libelle | capitalize }}<a href="{{path("app_modifier_sous_categorie",{'id':sc.id})}}">
+															<i class="bi bi-pen-fill text-dark"></i>
+														</a>
+
+
+														<a href="{{path("app_supprimer_sous_categorie",{'id':sc.id})}}">
+															<i class="bi bi-trash-fill text-dark"></i>
+														</a>
+													</li>
+												{% endfor %}
+
+
+											</ul>
+
+										{% endif %}
+									</td>
+
 									<td>
 										<a href="{{path("app_modifier_categorie",{'id':categorie.id})}}">
 											<i class="bi bi-pen-fill text-dark"></i>
