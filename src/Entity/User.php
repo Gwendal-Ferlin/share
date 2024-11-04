@@ -51,9 +51,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Fichier::class, mappedBy: 'user')]
     private Collection $fichiers;
 
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'usersDemande')]
+    private Collection $dedemander;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'dedemander')]
+    private Collection $usersDemande;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'userAccepte')]
+    private Collection $accepter;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
+    private Collection $userAccepte;
+
     public function __construct()
     {
         $this->fichiers = new ArrayCollection();
+        $this->dedemander = new ArrayCollection();
+        $this->usersDemande = new ArrayCollection();
+        $this->accepter = new ArrayCollection();
+        $this->userAccepte = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,6 +220,108 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($fichier->getUser() === $this) {
                 $fichier->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getDedemander(): Collection
+    {
+        return $this->dedemander;
+    }
+
+    public function addDedemander(self $dedemander): static
+    {
+        if (!$this->dedemander->contains($dedemander)) {
+            $this->dedemander->add($dedemander);
+        }
+
+        return $this;
+    }
+
+    public function removeDedemander(self $dedemander): static
+    {
+        $this->dedemander->removeElement($dedemander);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getUsersDemande(): Collection
+    {
+        return $this->usersDemande;
+    }
+
+    public function addUsersDemande(self $usersDemande): static
+    {
+        if (!$this->usersDemande->contains($usersDemande)) {
+            $this->usersDemande->add($usersDemande);
+            $usersDemande->addDedemander($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersDemande(self $usersDemande): static
+    {
+        if ($this->usersDemande->removeElement($usersDemande)) {
+            $usersDemande->removeDedemander($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getAccepter(): Collection
+    {
+        return $this->accepter;
+    }
+
+    public function addAccepter(self $accepter): static
+    {
+        if (!$this->accepter->contains($accepter)) {
+            $this->accepter->add($accepter);
+        }
+
+        return $this;
+    }
+
+    public function removeAccepter(self $accepter): static
+    {
+        $this->accepter->removeElement($accepter);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getUserAccepte(): Collection
+    {
+        return $this->userAccepte;
+    }
+
+    public function addUserAccepte(self $userAccepte): static
+    {
+        if (!$this->userAccepte->contains($userAccepte)) {
+            $this->userAccepte->add($userAccepte);
+            $userAccepte->addAccepter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserAccepte(self $userAccepte): static
+    {
+        if ($this->userAccepte->removeElement($userAccepte)) {
+            $userAccepte->removeAccepter($this);
         }
 
         return $this;
