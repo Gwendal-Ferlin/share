@@ -22,8 +22,9 @@
 											<fieldset>
 												<legend>
 													<i class="bi bi-filetype-pdf"></i>
-													{{f.nomOriginal}}</legend>
-												<ulstyle="list-style:none">
+													<a href="{{path('app_telechargement_fichier_user', {'id':f.id})}}" style="text-decoration: none">{{f.nomOriginal}}</a>
+												</legend>
+												<ul style="list-style: none">
 													{% for s in f.scategories %}
 														<li>{{s.numero}})
 															{{s.libelle | capitalize}}</li>

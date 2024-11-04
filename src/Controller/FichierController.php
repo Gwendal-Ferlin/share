@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Fichier;
 use App\Form\FichierType;
+use App\Repository\FichierRepository;
 use App\Repository\ScategorieRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +27,8 @@ class FichierController extends AbstractController
             $selectedScategories = $form->get('scategories')->getData();
             foreach ($selectedScategories as $scategorie) {
                 $fichier->addScategory($scategorie);
-            }$file = $form->get('fichier')->getData();
+            }
+            $file = $form->get('fichier')->getData();
 
             if ($file) {
                 $nomFichierServeur = pathinfo($file->getClientOriginalName(),
@@ -49,12 +51,12 @@ class FichierController extends AbstractController
                 }
             }
         }
-
         return $this->render('fichier/ajout-fichier.html.twig', [
             'form' => $form,
             'scategories' => $scategories,
         ]);
     }
+
     #[Route('/liste-fichiers', name: 'app_liste_fichiers')]
     public function listeFichiers(FichierRepository $fichierRepository): Response
     {
@@ -69,6 +71,21 @@ class FichierController extends AbstractController
     {
         $users = $userRepository->findBy([], ['name' => 'asc', 'prenom' => 'asc']);
         return $this->render('fichier/liste-fichiers-par-utilisateur.html.twig', ['users' => $users]);
+    }
+    #[Route('/private-telechargement-fichier-user/{id}', name: 'app_telechargement_fichier_user',
+        requirements: ["id" => "\d+"])]
+    public function telechargementFichierUser(Fichier $fichier)
+    {
+        if ($fichier == null) {
+            return $this->redirectToRoute('app_profil');
+        } else {
+            if ($fichier->getUser() !== $this->getUser()) {
+                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
+                return $this->redirectToRoute('app_profil');
+            }
+            return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
+                $fichier->getNomOriginal());
+        }
     }
 
 };

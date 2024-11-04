@@ -21,7 +21,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('email', EmailType::class, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' =>
                 'fw-bold']])
-            ->add('name', TextType::class, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' =>
+            ->add('nom', TextType::class, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' =>
                 'fw-bold']])
             ->add('prenom', TextType::class, ['attr' => ['class' => 'form-control'], 'label_attr' => ['class' =>
                 'fw-bold']])

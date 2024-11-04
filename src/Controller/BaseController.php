@@ -1,18 +1,18 @@
 <?php
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Repository\CategorieRepository;
-use App\Repository\UserRepository;
-use App\Entity\Categorie;
 use App\Entity\Contact;
-use App\Form\CategorieType;
+use App\Entity\Fichier;
 use App\Form\ContactType;
+use App\Form\FichierType;
+use App\Repository\ScategorieRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BaseController extends AbstractController
 {
@@ -68,8 +68,61 @@ class BaseController extends AbstractController
     }
 
     #[Route('/private-profil', name: 'app_profil')]
-    public function profil(): Response
-    {
-        return $this->render('base/profil.html.twig');
+    public function profil(Request $request, ScategorieRepository $scategorieRepository,
+        EntityManagerInterface $em, SluggerInterface $slugger): Response {
+        $fichier = new Fichier();
+        $scategories = $scategorieRepository->findBy([], ['categorie' => 'asc', 'numero' => 'asc']);
+        $form = $this->createForm(FichierType::class, $fichier, ['scategories' => $scategories]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedScategories = $form->get('scategories')->getData();
+            foreach ($selectedScategories as $scategorie) {
+                $fichier->addScategory($scategorie);
+            }
+            $file = $form->get('fichier')->getData();
+
+            if ($file) {
+                $nomFichierServeur = pathinfo($file->getClientOriginalName(),
+                    PATHINFO_FILENAME);
+                $nomFichierServeur = $slugger->slug($nomFichierServeur);
+                $nomFichierServeur = $nomFichierServeur . '-' . uniqid() . '.' . $file->guessExtension();
+                try {
+                    $fichier->setNomServeur($nomFichierServeur);
+                    $fichier->setNomOriginal($file->getClientOriginalName());
+                    $fichier->setDateEnvoi(new \Datetime());
+                    $fichier->setExtension($file->guessExtension());
+                    $fichier->setTaille($file->getSize());
+                    $fichier->setUser($this->getuser());
+                    $em->persist($fichier);
+                    $em->flush();
+                    $file->move($this->getParameter('file_directory'), $nomFichierServeur);
+                    $this->addFlash('notice', 'Fichier envoyé');
+                    return $this->redirectToRoute('app_profil');
+                } catch (FileException $e) {
+                    $this->addFlash('notice', 'Erreur d\'envoi');
+                }
+            }
+        }
+        return $this->render('base/profil.html.twig', [
+            'form' => $form,
+            'scategories' => $scategories,
+        ]);
     }
+
+    #[Route('/private-telechargement-fichier-user/{id}', name: 'app_telechargement_fichier_user',
+        requirements: ["id" => "\d+"])]
+    public function telechargementFichierUser(Fichier $fichier)
+    {
+        if ($fichier == null) {
+            return $this->redirectToRoute('app_profil');
+        } else {
+            if ($fichier->getUser() !== $this->getUser()) {
+                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
+                return $this->redirectToRoute('app_profil');
+            }
+            return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
+                $fichier->getNomOriginal());
+        }
+    }
+
 }
