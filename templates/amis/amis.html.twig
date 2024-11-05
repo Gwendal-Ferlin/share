@@ -31,6 +31,19 @@
 			</div>
 			<div class="col-6 col-md-6 bg-white p-4 m-0 text-primary text-center" style="border-right: 2px solid #158cba;">
 				<span class="fw-bold text-center">Reçues</span>
+				{% if app.user.usersDemande | length > 0 %}
+					{% for d in app.user.usersDemande %}
+						<div class="list-group m-2">
+							<div class="list-group-item list-group-itemaction bg-secondary" aria-current="true">
+								<div class="d-flex w-100 justifycontent-end">
+									<h5 class="mb-1 textprimary">{{d.email}}</h5>
+									<a href="{{path('app_amis', {'idAccepter':d.id})}}" class="btn btn-success btn-sm me-2 ms-2" tabindex="-1" role="button" aria-disabled="true">Accepter</a>
+									<a href="{{path('app_amis', {'idRefuser':d.id})}}" class="btn btn-success btn-sm" tabindex="-1" role="button" ariadisabled="true">Refuser</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% endif %}
 			</div>
 			<div class="col-6 col-md-6 bg-white p-4 m-0 text-primary text-center">
 				<span class="fw-bold text-center m-4 p-4">Envoyées</span>
@@ -41,6 +54,26 @@
 								<div class="d-flex w-100 justifycontent-between">
 									<h5 class="mb-1 textprimary">{{d.email}}</h5>
 									<a href="{{path('app_amis', {'id':d.id})}}" class="btn btn-success btn-sm" tabindex="-1" role="button" ariadisabled="true">Annuler</a>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% endif %}
+			</div>
+			<div class="col-6 col-md-6 bg-white p-4 m-0 text-primary text-center">
+				<h2 class="fw-bold text-center m-4 p-4">Vos amis</h2>
+				{% if app.user.accepter | length > 0 %}
+					{% for a in app.user.accepter %}
+						<div class="list-group m-2">
+							<div class="list-group-item list-group-itemaction bg-secondary" aria-current="true">
+								<div class="d-flex w-100 justifycontent-between">
+									<span class="mb-1 textprimary">{{a.name | upper}}
+										{{a.prenom | capitalize}}</span>
+									<span>
+									<i class="bi bi-person"></i>
+										<a href="{{path("app_supprimer_amis",{'id':a.id})}}">
+										<i class="bi bi-trash-fill text-dark"></i>
+									</a></span>
 								</div>
 							</div>
 						</div>

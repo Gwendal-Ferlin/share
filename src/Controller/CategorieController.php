@@ -8,6 +8,7 @@ use App\Form\ModifierCategorieType;
 use App\Form\ModifierSousCategorieType;
 use App\Form\SupprimerCategorieType;
 use App\Form\SupprimerSousCategorieType;
+use App\Form\CategorieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

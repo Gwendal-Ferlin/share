@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Fichier;
+use App\Entity\User;
 use App\Form\FichierType;
 use App\Repository\FichierRepository;
 use App\Repository\ScategorieRepository;

@@ -39,46 +39,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $inscriptionDate = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length : 100)]
     private ?string $name = null;
 
     #[ORM\Column(length: 100)]
     private ?string $prenom = null;
 
-    /**
-     * @var Collection<int, Fichier>
-     */
-    #[ORM\OneToMany(targetEntity: Fichier::class, mappedBy: 'user')]
-    private Collection $fichiers;
-
-    /**
-     * @var Collection<int, self>
-     */
-    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'usersDemande')]
-    private Collection $dedemander;
-
-    /**
-     * @var Collection<int, self>
-     */
-    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'dedemander')]
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'demander')]
     private Collection $usersDemande;
+    #[ORM\JoinTable(name: "user_demande")]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'demander_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: 'User', inversedBy: 'demander')]
+    private Collection $demander;
 
-    /**
-     * @var Collection<int, self>
-     */
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'userAccepte')]
+    
+    #[ORM\JoinTable(name: "user_accepter",
+        joinColumns: [new ORM\JoinColumn(name: "user_id", referencedColumnName: "id")],
+        inverseJoinColumns: [new ORM\JoinColumn(name: "accepter_id", referencedColumnName:"id")])]
     private Collection $accepter;
 
-    /**
-     * @var Collection<int, self>
-     */
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
     private Collection $userAccepte;
 
     public function __construct()
     {
         $this->fichiers = new ArrayCollection();
-        $this->dedemander = new ArrayCollection();
+        $this->demander = new ArrayCollection();
         $this->usersDemande = new ArrayCollection();
         $this->accepter = new ArrayCollection();
         $this->userAccepte = new ArrayCollection();
@@ -228,23 +216,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, self>
      */
-    public function getDedemander(): Collection
+    public function getDemander(): Collection
     {
-        return $this->dedemander;
+        return $this->demander;
     }
 
-    public function addDedemander(self $dedemander): static
+    public function addDemander(self $demander): static
     {
-        if (!$this->dedemander->contains($dedemander)) {
-            $this->dedemander->add($dedemander);
+        if (!$this->demander->contains($demander)) {
+            $this->demander->add($demander);
         }
 
         return $this;
     }
 
-    public function removeDedemander(self $dedemander): static
+    public function removeDemander(self $demander): static
     {
-        $this->dedemander->removeElement($dedemander);
+        $this->demander->removeElement($demander);
 
         return $this;
     }
@@ -261,7 +249,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->usersDemande->contains($usersDemande)) {
             $this->usersDemande->add($usersDemande);
-            $usersDemande->addDedemander($this);
+            $usersDemande->addDemander($this);
         }
 
         return $this;
@@ -270,7 +258,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeUsersDemande(self $usersDemande): static
     {
         if ($this->usersDemande->removeElement($usersDemande)) {
-            $usersDemande->removeDedemander($this);
+            $usersDemande->removeDemander($this);
         }
 
         return $this;

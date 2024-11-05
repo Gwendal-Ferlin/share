@@ -39,7 +39,7 @@ security:
 
     role_hierarchy:
         ROLE_MOD: [ROLE_USER]
-        ROLE_ADMIN: [ROLE_ADMIN]             
+        ROLE_ADMIN: [ROLE_ADMIN, ROLE_MOD]             
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
