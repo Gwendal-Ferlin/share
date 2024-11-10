@@ -1,73 +1,99 @@
 {% extends 'base.html.twig' %}
-{% block title %}
-	{{parent()}}Votre profil
-{% endblock %}
-{% block body %}
-	<div class="container-fluid">
-		<h1 class="text-center text-primary mt-4 pt-4 display-1 fw-bold">
-			Page Profil</h1>
-		<div class="row justify-content-center">
-			<div class="col-12 col-md-8 bg-white p-4 m-0 text-primary">
-				<table class="table">
-					<tr class='primary text-center'>
-						<td>{{app.user.prenom}}
-							{{app.user.name|upper}}</td>
-					</tr>
-					<tr class='primary text-center'>
-						<td>{{app.user.email}}</td>
-					</tr>
-					<tr class='primary text-center'>
-						<td>Inscription le
-							{{app.user.inscriptionDate|date('d/m/Y')}}
-							à
-							{{ app.user.inscriptionDate|date('H:i') }}</td>
-					</tr>
-					<tr class='primary text-center'>
-						<td>
-							{% if "ROLE_ADMIN" in app.user.roles %}
-								Administrateur
-							{% elseif "ROLE_MOD" in app.user.roles %}
-								Modérateur
-							{% elseif "ROLE_USER" in app.user.roles %}
-								Utilisateur
-							{% endif %}
-						</td>
-					</tr>
-					<tr class='primary text-center'>
-						<td>Vous avez
-							{{app.user.fichiers | length}}
-							fichier(s)</td>
-					</tr>
-					{% if app.user.fichiers | length > 0 %}
-						{% for f in app.user.fichiers %}
-							<tr>
-								<td>
-									<fieldset>
-										<legend>
 
-											<i class="bi bi-filetype-pdf"></i>
-											<span class="text-primary">
-												<a href="{{path('app_telechargement_fichier_user', {'id':f.id})}}" style="text-decoration: none">{{f.nomOriginal}}</a>
-											</span>
-											<span><a href='{{path('app_partage_fichier', {'id':f.id})}}'><i class='bx bxs-share'></i></a></span>
-										</legend>
-										<ulstyle="list-style:none">
-											{% for s in f.scategories %}
-												<li>{{s.numero}})
-													{{s.libelle | capitalize}}</li>
-											{% endfor %}
-										</ul>
-									</fieldset>
-								</td>
-							</tr>
-						{% endfor %}
-					{% else %}
-						<tr>
-							<td class="text-center">Aucun fichier</td>
-						</tr>
-					{% endif %}
-				</table>
-				<div class="container-fluid">
+{% block title %}
+    {{ parent() }} Votre profil
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <h1 class="text-center text-primary mt-4 pt-4 display-1 fw-bold">
+        Page Profil
+    </h1>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 bg-white p-4 m-0 text-primary">
+            <table class="table">
+                <tr class='primary text-center'>
+                    <td>{{ app.user.prenom }} {{ app.user.name | upper }}</td>
+                </tr>
+                <tr class='primary text-center'>
+                    <td>{{ app.user.email }}</td>
+                </tr>
+                <tr class='primary text-center'>
+                    <td>Inscription le
+                        {{ app.user.inscriptionDate | date('d/m/Y') }} à
+                        {{ app.user.inscriptionDate | date('H:i') }}</td>
+                </tr>
+                <tr class='primary text-center'>
+                    <td>
+                        {% if "ROLE_ADMIN" in app.user.roles %}
+                            Administrateur
+                        {% elseif "ROLE_MOD" in app.user.roles %}
+                            Modérateur
+                        {% elseif "ROLE_USER" in app.user.roles %}
+                            Utilisateur
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class='primary text-center'>
+                    <td class="text-center text-primary"><h3>Vous avez {{ app.user.fichiers | length }} fichier(s)</h3></td>
+                </tr>
+
+                {% if app.user.fichiers | length > 0 %}
+                    {% for f in app.user.fichiers %}
+                        <tr>
+                            <td>
+                                <fieldset>
+                                    <legend>
+                                        <i class="bi bi-filetype-pdf"></i>
+                                        <span class="text-primary">
+                                            <a href="{{ path('app_telechargement_fichier_user', {'id': f.id}) }}" style="text-decoration: none">{{ f.nomOriginal }}</a>
+                                        </span>
+                                        <span><a href="{{ path('app_choix_amis_partage', {'fichierId': f.id}) }}"><i class="bx bxs-share"></i></a></span>
+                                    </legend>
+                                    <ul style="list-style:none">
+                                        {% for s in f.scategories %}
+                                            <li>{{ s.numero }}) {{ s.libelle | capitalize }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td class="text-center">Aucun fichier</td>
+                    </tr>
+                {% endif %}
+                {% if app.user.fichiersAmis | length > 0 %}
+                    <tr>
+                        <td colspan="2" class="text-center text-primary"><h3>Fichiers partagés avec vous</h3></td>
+                    </tr>
+                    {% for f in app.user.fichiersAmis %}
+                        <tr>
+                            <td>
+                                <fieldset>
+                                    <legend>
+                                        <i class="bi bi-filetype-pdf"></i>
+                                        <span class="text-primary">
+                                            <a href="{{ path('app_telechargement_fichier_user', {'id': f.id}) }}" style="text-decoration: none">{{ f.nomOriginal }}</a>
+                                        </span>
+                                    </legend>
+                                    <ul style="list-style:none">
+                                        {% for s in f.scategories %}
+                                            <li>{{ s.numero }}) {{ s.libelle | capitalize }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </fieldset>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td class="text-center">Aucun fichier partagé avec vous</td>
+                    </tr>
+                {% endif %}
+            </table>
+        <div class="container-fluid">
 					<div class="row justify-content-center">
 						<div class="col-12 col-sm-10 col-md-8 text-primary">
 							<h1 class="text-center text-primary mt-4 pt-4 fw-bold">

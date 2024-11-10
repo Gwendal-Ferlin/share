@@ -74,6 +74,11 @@ class BaseController extends AbstractController
         $scategories = $scategorieRepository->findBy([], ['categorie' => 'asc', 'numero' => 'asc']);
         $form = $this->createForm(FichierType::class, $fichier, ['scategories' => $scategories]);
         $form->handleRequest($request);
+        $user = $this->getUser();
+        $friends = $user->getUserAccepte();
+        if ($friends->isEmpty()) {
+            $friends = [];
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedScategories = $form->get('scategories')->getData();
             foreach ($selectedScategories as $scategorie) {
@@ -106,6 +111,7 @@ class BaseController extends AbstractController
         return $this->render('base/profil.html.twig', [
             'form' => $form,
             'scategories' => $scategories,
+            'friends' => $friends,
         ]);
     }
 
@@ -113,32 +119,66 @@ class BaseController extends AbstractController
         requirements: ["id" => "\d+"])]
     public function telechargementFichierUser(Fichier $fichier)
     {
+        $user = $this->getUser();
         if ($fichier == null) {
             return $this->redirectToRoute('app_profil');
         } else {
-            if ($fichier->getUser() !== $this->getUser()) {
-                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
+            if ($fichier->getUser() !== $this->getUser() && !$fichier->getAccesAmis()->contains($user)) {
+                $this->addFlash('notice', 'Vous n\'avez pas accès a ce fichier');
                 return $this->redirectToRoute('app_profil');
             }
+            
             return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
                 $fichier->getNomOriginal());
         }
     }
 
-    #[Route('/private-partage_fichier/{id}', name: 'app_partage_fichier',
-        requirements: ["id" => "\d+"])]
-    public function partageFichier(Fichier $fichier)
+    #[Route('/private-partage_fichier/{fichierId}/{friendId}', name: 'app_partage_fichier', requirements: ["fichierId" => "\d+", "friendId" => "\d+"])]
+    public function partageFichier(int $fichierId, int $friendId, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
-        if ($fichier == null) {
+        $fichier = $em->getRepository(Fichier::class)->find($fichierId);
+        $friend = $userRepository->find($friendId);
+        if (!$fichier || !$friend) {
+            $this->addFlash('notice', 'Fichier ou utilisateur non trouvé.');
             return $this->redirectToRoute('app_profil');
-        } else {
-            if ($fichier->getUser() !== $this->getUser()) {
-                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
-                return $this->redirectToRoute('app_profil');
-            }
-            return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
-                $fichier->getNomOriginal());
         }
+
+        if ($fichier->getUser() !== $this->getUser()) {
+            $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
+            return $this->redirectToRoute('app_profil');
+        }
+
+        $fichier->addAccesAmi($friend);
+        $em->persist($fichier);
+        $em->flush();
+
+        $this->addFlash('notice', "Fichier partagé avec {$friend->getName()}.");
+        return $this->redirectToRoute('app_profil');
+    }
+
+    #[Route('/private-choix_amis_partage/{fichierId}', name: 'app_choix_amis_partage', requirements: ["fichierId" => "\d+"])]
+    public function choix_amis_partage(int $fichierId, EntityManagerInterface $em): Response
+    {   $user = $this->getUser();   
+        $fichier = $em->getRepository(Fichier::class)->find($fichierId);
+        $friends = $user->getUserAccepte();
+        $access = $fichier->getAccesAmis();
+        //dump($access);
+        return $this->render('fichier/choix_amis_partage.html.twig', [
+            'amis' => $friends,
+            'fichierId' => $fichierId,
+            'fichier' => $fichier,
+        ]);
+    }
+
+    #[Route('/private-retirer_acces_amis/{fichierId}/{friendId}', name: 'app_retirer_acces_amis', requirements: ["fichierId" => "\d+", "friendId" => "\d+"])]
+    public function retirerAccesAmis(int $fichierId, int $friendId, EntityManagerInterface $em, UserRepository $userRepository): Response
+    {   
+        $fichier = $em->getRepository(Fichier::class)->find($fichierId);
+        $friend = $userRepository->find($friendId);
+        $fichier->removeAccesAmi($friend);
+        $em->flush();
+        $this->addFlash('notice', "{$friend->getName()} {$friend->getPrenom()} n'a plus accès au fichier");
+        return $this->redirectToRoute('app_profil');
     }
 
 }

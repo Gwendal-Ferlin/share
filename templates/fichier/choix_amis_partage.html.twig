@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent() }} Envoie fichier, choix ami
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="text-center text-primary mt-4 pt-4 display-1 fw-bold">
+            A qui partager le fichier ?
+        </h1>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 bg-white p-4 m-0 text-primary">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="fw-bold text-primary">
+                                <th scope="col">Prénom</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ami in amis|sort((a, b) => b.name <=> a.name) %}
+                                <tr class="{{ cycle(['table-primary', 'table-secondary'], loop.index0) }}">
+                                    <td>{{ ami.prenom }}</td>
+                                    <td>{{ ami.name | upper }}</td>
+                                    <td>
+                                        {% if ami in fichier.getAccesAmis() %}
+                                            <a href="{{ path('app_retirer_acces_amis', {'fichierId': fichierId, 'friendId': ami.id }) }}">
+                                                <button type="button" class="btn btn-danger">Retirer l'accès</button>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ path('app_partage_fichier', {'fichierId': fichierId, 'friendId': ami.id }) }}">
+                                                <button type="button" class="btn btn-dark">Partager</button>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

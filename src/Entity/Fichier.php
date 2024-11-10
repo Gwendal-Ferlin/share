@@ -41,9 +41,16 @@ class Fichier
     #[ORM\ManyToMany(targetEntity: Scategorie::class, inversedBy: 'fichiers')]
     private Collection $scategories;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'fichiersAmis')]
+    private Collection $AccesAmis;
+
     public function __construct()
     {
         $this->scategories = new ArrayCollection();
+        $this->AccesAmis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -143,6 +150,30 @@ class Fichier
     public function removeScategory(Scategorie $scategory): static
     {
         $this->scategories->removeElement($scategory);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getAccesAmis(): Collection
+    {
+        return $this->AccesAmis;
+    }
+
+    public function addAccesAmi(User $accesAmi): static
+    {
+        if (!$this->AccesAmis->contains($accesAmi)) {
+            $this->AccesAmis->add($accesAmi);
+        }
+
+        return $this;
+    }
+
+    public function removeAccesAmi(User $accesAmi): static
+    {
+        $this->AccesAmis->removeElement($accesAmi);
 
         return $this;
     }

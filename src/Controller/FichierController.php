@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Fichier;
-use App\Entity\User;
 use App\Form\FichierType;
 use App\Repository\FichierRepository;
 use App\Repository\ScategorieRepository;
@@ -72,21 +71,6 @@ class FichierController extends AbstractController
     {
         $users = $userRepository->findBy([], ['name' => 'asc', 'prenom' => 'asc']);
         return $this->render('fichier/liste-fichiers-par-utilisateur.html.twig', ['users' => $users]);
-    }
-    #[Route('/private-telechargement-fichier-user/{id}', name: 'app_telechargement_fichier_user',
-        requirements: ["id" => "\d+"])]
-    public function telechargementFichierUser(Fichier $fichier)
-    {
-        if ($fichier == null) {
-            return $this->redirectToRoute('app_profil');
-        } else {
-            if ($fichier->getUser() !== $this->getUser()) {
-                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
-                return $this->redirectToRoute('app_profil');
-            }
-            return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
-                $fichier->getNomOriginal());
-        }
     }
 
 };

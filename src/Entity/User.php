@@ -62,9 +62,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
     private Collection $userAccepte;
+    
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Fichier::class)]
     private Collection $fichiers;
+
+    /**
+     * @var Collection<int, Fichier>
+     */
+    #[ORM\ManyToMany(targetEntity: Fichier::class, mappedBy: 'AccesAmis')]
+    private Collection $fichiersAmis;
 
     public function __construct()
     {
@@ -73,6 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->usersDemande = new ArrayCollection();
         $this->accepter = new ArrayCollection();
         $this->userAccepte = new ArrayCollection();
+        $this->fichiersAmis = new ArrayCollection();
         
     }
 
@@ -295,9 +303,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, self>
      */
+    
     public function getUserAccepte(): Collection
     {
         return $this->userAccepte;
+        
     }
 
     public function addUserAccepte(self $userAccepte): static
@@ -314,6 +324,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->userAccepte->removeElement($userAccepte)) {
             $userAccepte->removeAccepter($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fichier>
+     */
+    public function getFichiersAmis(): Collection
+    {
+        return $this->fichiersAmis;
+    }
+
+    public function addFichiersAmi(Fichier $fichiersAmi): static
+    {
+        if (!$this->fichiersAmis->contains($fichiersAmi)) {
+            $this->fichiersAmis->add($fichiersAmi);
+            $fichiersAmi->addAccesAmi($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFichiersAmi(Fichier $fichiersAmi): static
+    {
+        if ($this->fichiersAmis->removeElement($fichiersAmi)) {
+            $fichiersAmi->removeAccesAmi($this);
         }
 
         return $this;
