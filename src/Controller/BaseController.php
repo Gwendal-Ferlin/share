@@ -125,4 +125,20 @@ class BaseController extends AbstractController
         }
     }
 
+    #[Route('/private-partage_fichier/{id}', name: 'app_partage_fichier',
+        requirements: ["id" => "\d+"])]
+    public function partageFichier(Fichier $fichier)
+    {
+        if ($fichier == null) {
+            return $this->redirectToRoute('app_profil');
+        } else {
+            if ($fichier->getUser() !== $this->getUser()) {
+                $this->addFlash('notice', 'Vous n\'êtes pas le propriétaire de ce fichier');
+                return $this->redirectToRoute('app_profil');
+            }
+            return $this->file($this->getParameter('file_directory') . '/' . $fichier->getNomServeur(),
+                $fichier->getNomOriginal());
+        }
+    }
+
 }

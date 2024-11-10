@@ -29,7 +29,7 @@ class Fichier
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateEnvoi = null;
 
-    #[ORM\Column(length: 5)]
+    #[ORM\Column(length : 5)]
     private ?string $extension = null;
 
     #[ORM\Column]

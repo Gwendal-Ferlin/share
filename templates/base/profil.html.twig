@@ -49,6 +49,7 @@
 											<span class="text-primary">
 												<a href="{{path('app_telechargement_fichier_user', {'id':f.id})}}" style="text-decoration: none">{{f.nomOriginal}}</a>
 											</span>
+											<span><a href='{{path('app_partage_fichier', {'id':f.id})}}'><i class='bx bxs-share'></i></a></span>
 										</legend>
 										<ulstyle="list-style:none">
 											{% for s in f.scategories %}

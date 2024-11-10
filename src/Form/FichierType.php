@@ -21,7 +21,7 @@ class FichierType extends AbstractType
             ->add('fichier', FileType::class, array('label' => 'Fichier', 'mapped' => false, 'attr' => ['class' =>
                 'form-control'], 'label_attr' => ['class' => 'fw-bold'], 'constraints' => [
                 new File([
-                    'maxSize' => '2000k',
+                    'maxSize' => '200k',
                     'mimeTypes' => [
                         'application/pdf',
                         'application/x-pdf',

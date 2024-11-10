@@ -54,14 +54,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $demander;
 
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'userAccepte')]
-    
+
     #[ORM\JoinTable(name: "user_accepter",
         joinColumns: [new ORM\JoinColumn(name: "user_id", referencedColumnName: "id")],
-        inverseJoinColumns: [new ORM\JoinColumn(name: "accepter_id", referencedColumnName:"id")])]
+        inverseJoinColumns: [new ORM\JoinColumn(name: "accepter_id", referencedColumnName: "id")])]
     private Collection $accepter;
 
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
     private Collection $userAccepte;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Fichier::class)]
+    private Collection $fichiers;
 
     public function __construct()
     {
@@ -70,6 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->usersDemande = new ArrayCollection();
         $this->accepter = new ArrayCollection();
         $this->userAccepte = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -314,4 +318,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 }
