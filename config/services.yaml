@@ -4,7 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-     file_directory: '%kernel.project_dir%/uploads/fichiers'
+    file_directory: '%kernel.project_dir%/uploads/fichiers'
+    remote_user: 'bddsauvegarde'
+    remote_host: '10.189.166.149'
+    remote_path: '/home/bddsauvegarde/sauvegardes_bdd'  
+
 
 services:
     # default configuration for services in *this* file
@@ -21,5 +25,12 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # Register the command for database backup with SCP transfer
+    App\Command\DatabaseBackupCommand:
+        arguments:
+            $params: '@parameter_bag'
+    
+    # Register EncryptionService for file encryption
+    App\Service\EncryptionService:
+        arguments:
+            $key: '%env(APP_SECRET)%'
