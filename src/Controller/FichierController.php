@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Fichier;
 use App\Form\FichierType;
+use App\Form\FichierUserType;
 use App\Repository\FichierRepository;
 use App\Repository\ScategorieRepository;
 use App\Repository\UserRepository;
@@ -21,7 +22,7 @@ class FichierController extends AbstractController
         EntityManagerInterface $em, SluggerInterface $slugger): Response {
         $fichier = new Fichier();
         $scategories = $scategorieRepository->findBy([], ['categorie' => 'asc', 'numero' => 'asc']);
-        $form = $this->createForm(FichierType::class, $fichier, ['scategories' => $scategories]);
+        $form = $this->createForm(FichierUserType::class, $fichier, ['scategories' => $scategories]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedScategories = $form->get('scategories')->getData();
@@ -41,6 +42,7 @@ class FichierController extends AbstractController
                     $fichier->setDateEnvoi(new \Datetime());
                     $fichier->setExtension($file->guessExtension());
                     $fichier->setTaille($file->getSize());
+                    $fichier->setUser($form->get('user')->getData());
                     $em->persist($fichier);
                     $em->flush();
                     $file->move($this->getParameter('file_directory'), $nomFichierServeur);
