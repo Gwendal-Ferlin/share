@@ -47,17 +47,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'demander')]
     private Collection $usersDemande;
-    #[ORM\JoinTable(name: "user_demande")]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[InverseJoinColumn(name: 'demander_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: 'User', inversedBy: 'demander')]
+
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'usersDemande')]
+    #[ORM\JoinTable(name: 'user_demande',
+        joinColumns: [new ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'demander_id', referencedColumnName: 'id')]
+    )]
     private Collection $demander;
 
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'userAccepte')]
-
-    #[ORM\JoinTable(name: "user_accepter",
-        joinColumns: [new ORM\JoinColumn(name: "user_id", referencedColumnName: "id")],
-        inverseJoinColumns: [new ORM\JoinColumn(name: "accepter_id", referencedColumnName: "id")])]
+    #[ORM\JoinTable(name: 'user_accepter',
+        joinColumns: [new ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'accepter_id', referencedColumnName: 'id')]
+    )]
     private Collection $accepter;
 
     #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'accepter')]
@@ -228,30 +230,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, self>
      */
-    public function getDemander(): Collection
-    {
-        return $this->demander;
-    }
-
-    public function addDemander(self $demander): static
-    {
-        if (!$this->demander->contains($demander)) {
-            $this->demander->add($demander);
-        }
-
-        return $this;
-    }
-
-    public function removeDemander(self $demander): static
-    {
-        $this->demander->removeElement($demander);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
     public function getUsersDemande(): Collection
     {
         return $this->usersDemande;
@@ -303,7 +281,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, self>
      */
-    
+    public function getDemander(): Collection
+    {
+        return $this->demander;
+    }
+
+    public function addDemander(self $demander): static
+    {
+        if (!$this->demander->contains($demander)) {
+            $this->demander->add($demander);
+        }
+
+        return $this;
+    }
+
+    public function removeDemander(self $demander): static
+    {
+        $this->demander->removeElement($demander);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
     public function getUserAccepte(): Collection
     {
         return $this->userAccepte;

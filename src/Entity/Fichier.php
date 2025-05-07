@@ -45,6 +45,10 @@ class Fichier
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'fichiersAmis')]
+    #[ORM\JoinTable(name: 'fichier_user',
+        joinColumns: [new ORM\JoinColumn(name: 'fichier_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    )]
     private Collection $AccesAmis;
 
     public function __construct()
