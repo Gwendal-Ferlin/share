@@ -15,6 +15,18 @@
 			justify-content: center;
 			margin-bottom: 1rem;
 		}
+		.search-container {
+			margin: 20px auto;
+			width: 100%;
+			max-width: 500px;
+		}
+		#friend-search {
+			width: 100%;
+			padding: 10px;
+			border: 2px solid #158cba;
+			border-radius: 5px;
+			font-size: 16px;
+		}
 	</style>
 {% endblock %}
 {% block body %}
@@ -60,26 +72,38 @@
 					{% endfor %}
 				{% endif %}
 			</div>
-			<div class="col-6 col-md-6 bg-white p-4 m-0 text-primary text-center">
-				<h2 class="fw-bold text-center m-4 p-4">Vos amis</h2>
-				{% if app.user.accepter | length > 0 %}
-					{% for a in app.user.accepter %}
-						<div class="list-group m-2">
-							<div class="list-group-item list-group-itemaction bg-secondary" aria-current="true">
-								<div class="d-flex w-100 justifycontent-between">
-									<span class="mb-1 textprimary">{{a.name | upper}}
-										{{a.prenom | capitalize}}</span>
-									<span>
-									<i class="bi bi-person"></i>
-										<a href="{{path("app_supprimer_amis",{'id':a.id})}}">
-										<i class="bi bi-trash-fill text-dark"></i>
-									</a></span>
+			<div class="col-12 col-md-12 bg-white p-4 m-0 text-primary text-center">
+				<h2 class="fw-bold text-center mb-4">Vos amis</h2>
+				
+				<div class="search-container">
+					<input type="text" id="friend-search" placeholder="Rechercher un ami..." class="form-control">
+				</div>
+				
+				<div id="friends-list">
+					{% if app.user.accepter | length > 0 %}
+						{% for a in app.user.accepter %}
+							<div class="list-group m-2">
+								<div class="list-group-item list-group-itemaction bg-secondary" aria-current="true">
+									<div class="d-flex w-100 justify-content-between">
+										<span class="mb-1 text-primary friend-name">{{a.name | upper}} {{a.prenom | capitalize}}</span>
+										<span>
+											<i class="bi bi-person"></i>
+											<a href="{{path("app_supprimer_amis",{'id':a.id})}}">
+												<i class="bi bi-trash-fill text-dark"></i>
+											</a>
+										</span>
+									</div>
 								</div>
 							</div>
-						</div>
-					{% endfor %}
-				{% endif %}
+						{% endfor %}
+					{% endif %}
+				</div>
 			</div>
 		</div>
 	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{{ encore_entry_script_tags('friendSearch') }}
 {% endblock %}

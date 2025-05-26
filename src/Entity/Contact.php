@@ -27,10 +27,10 @@ class Contact
     #[ORM\Column(length: 100)]
     private ?string $email = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: "text")]
     private ?string $message = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: "datetime")]
     private ?\DateTimeInterface $dateEnvoi = null;
 
     public function getId(): ?int
